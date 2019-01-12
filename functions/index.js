@@ -1,28 +1,32 @@
-// Copyright 2016, Google, Inc.
-// Licensed under the Apache License, Version 2.0 (the 'License');
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an 'AS IS' BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-'use strict';
-
-const {dialogflow} = require('actions-on-google');
+const {
+  BasicCard,
+  Image,
+  Suggestions,
+  dialogflow,
+} = require('actions-on-google');
 const functions = require('firebase-functions');
+
+const images = (name) => {
+  return 'placeholder.png';
+};
 
 const app = dialogflow({debug: true});
 
 app.intent('Default Welcome Intent', (conv) => {
-  conv.close('Hello, World!');
-  // Complete your fulfillment logic and
-  // send a response when the function is done executing
+  conv.ask('Welcome to Trade Talks Captain!');
+  conv.ask(new Suggestions('Sail to Coral Island'));
 });
 
-exports.yourAction = functions.https.onRequest(app);
+app.intent('Change Location', (conv, params) => {
+  const { locale } = params;
+  conv.ask("We've arrived at " + JSON.stringify(locale) + " Captain!");
+  conv.ask(new BasicCard({
+    image: new Image({
+      url: images(),
+      alt: 'character image',
+    }),
+  }));
+});
+
+exports.aog = functions.https.onRequest(app);
 
